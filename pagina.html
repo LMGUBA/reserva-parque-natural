@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parque Natural · Reservas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .fade { animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+    input[type="date"]::-webkit-calendar-picker-indicator { cursor:pointer; opacity:.6; }
+    select { appearance:auto; }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-green-50 via-emerald-50 to-lime-50 min-h-screen">
+
+<!-- ══════════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════════ -->
+<header class="bg-gradient-to-r from-green-800 to-emerald-700 shadow-lg">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between h-14">
+
+      <!-- Logo + nombre -->
+      <div class="flex items-center gap-2 min-w-0">
+        <div class="w-8 h-8 shrink-0 bg-white/15 rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17 8C8 10 5.9 16.17 3.82 21h3.09l1-2h6.18l1 2h3.09C16.1 16.17 14 10 5 8c2 0 6 1 8 4 0-3-1-6-4-8 3 0 7 2 8 4z"/>
+          </svg>
+        </div>
+        <div class="leading-tight min-w-0">
+          <p class="text-white font-extrabold text-sm tracking-tight whitespace-nowrap">Parque Natural</p>
+          <p class="text-green-300 text-xs font-medium whitespace-nowrap">Sistema de Reservas</p>
+        </div>
+      </div>
+
+      <!-- Usuario activo -->
+      <div id="headerUser" class="hidden items-center gap-2 shrink-0 ml-3">
+        <!-- En móvil solo ícono + rol abreviado; en sm+ texto completo -->
+        <div class="flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-2.5 py-1">
+          <div class="w-4 h-4 rounded-full bg-green-300/30 flex items-center justify-center shrink-0">
+            <svg class="w-2.5 h-2.5 text-green-100" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+            </svg>
+          </div>
+          <span id="headerLabel" class="text-green-100 text-xs font-semibold max-w-[100px] truncate sm:max-w-none"></span>
+        </div>
+        <button onclick="logout()"
+          class="flex items-center gap-1 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold px-2.5 py-1 rounded-full transition-all whitespace-nowrap">
+          <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          <span class="hidden xs:inline">Salir</span>
+          <span class="inline xs:hidden">×</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<!-- Franja decorativa verde -->
+<div class="h-1 bg-gradient-to-r from-lime-400 via-emerald-400 to-green-500"></div>
+
+<!-- ══════════════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════════════ -->
+<main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+
+  <!-- ─────────────── LOGIN ─────────────── -->
+  <div id="login" class="fade flex items-center justify-center pt-6">
+    <div class="w-full max-w-sm">
+
+      <!-- Hero brand -->
+      <div class="text-center mb-7">
+        <div class="w-16 h-16 bg-gradient-to-br from-green-700 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-200">
+          <svg class="w-9 h-9 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17 8C8 10 5.9 16.17 3.82 21h3.09l1-2h6.18l1 2h3.09C16.1 16.17 14 10 5 8c2 0 6 1 8 4 0-3-1-6-4-8 3 0 7 2 8 4z"/>
+          </svg>
+        </div>
+        <h1 class="text-2xl font-extrabold text-green-900 tracking-tight">Parque Natural</h1>
+        <p class="text-emerald-600 text-sm font-medium mt-0.5">Reserva tu visita al parque</p>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-xl shadow-green-100 border border-green-100 overflow-hidden">
+        <!-- Banda superior decorativa -->
+        <div class="h-1.5 bg-gradient-to-r from-green-500 via-emerald-400 to-lime-400"></div>
+
+        <div class="p-7">
+          <h2 class="text-base font-bold text-gray-800 mb-5">Acceso al sistema</h2>
+
+          <div class="space-y-3">
+            <!-- Usuario -->
+            <div class="relative">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <input id="user" type="text" placeholder="Usuario"
+                class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all placeholder-gray-400">
+            </div>
+            <!-- Contraseña -->
+            <div class="relative">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+              </svg>
+              <input id="pass" type="password" placeholder="Contraseña"
+                class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all placeholder-gray-400"
+                onkeydown="if(event.key==='Enter')login()">
+            </div>
+
+            <button onclick="login()"
+              class="w-full bg-gradient-to-r from-green-700 to-emerald-600 hover:from-green-800 hover:to-emerald-700 text-white font-bold py-2.5 rounded-xl text-sm shadow-md shadow-green-200 hover:shadow-lg transition-all mt-1">
+              Ingresar
+            </button>
+
+            <div id="loginErr" class="hidden text-red-500 text-xs text-center font-semibold bg-red-50 border border-red-100 rounded-lg py-2 px-3"></div>
+          </div>
+
+          <!-- Accesos demo -->
+          <div class="mt-5 pt-4 border-t border-gray-100">
+            <p class="text-xs text-gray-400 text-center mb-2.5 font-medium">Accesos de prueba</p>
+            <div class="grid grid-cols-3 gap-2">
+              <button onclick="setDemo('admin','123')"
+                class="text-xs bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-semibold py-2 rounded-xl transition-colors">
+                Admin
+              </button>
+              <button onclick="setDemo('operario','123')"
+                class="text-xs bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-semibold py-2 rounded-xl transition-colors">
+                Operario
+              </button>
+              <button onclick="setDemo('monitor','123')"
+                class="text-xs bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-semibold py-2 rounded-xl transition-colors">
+                Monitor
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie decorativo -->
+      <p class="text-center text-xs text-green-600/60 mt-5 font-medium">
+        🌿 Reserva tu ingreso de forma rápida y segura
+      </p>
+    </div>
+  </div>
+
+  <!-- ─────────────── OPERARIO ─────────────── -->
+  <div id="operario" class="hidden fade space-y-5">
+
+    <!-- Encabezado sección -->
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-green-700 rounded-xl flex items-center justify-center shadow-sm shadow-green-200">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-lg font-extrabold text-green-900">Registrar Reserva</h2>
+        <p class="text-green-600 text-xs font-medium">Selecciona fecha, turno y registra el visitante</p>
+      </div>
+    </div>
+
+    <!-- Card principal del formulario -->
+    <div class="bg-white rounded-2xl shadow-md shadow-green-100 border border-green-100 overflow-hidden">
+      <div class="h-1 bg-gradient-to-r from-green-500 via-emerald-400 to-lime-400"></div>
+      <div class="p-6">
+
+        <!-- Fila de controles — SIN CAMBIOS FUNCIONALES -->
+        <div class="flex flex-wrap items-end gap-3">
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-green-700 uppercase tracking-wide flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              Fecha de visita
+            </label>
+            <input type="date" id="fecha"
+              class="border-2 border-gray-200 hover:border-green-300 focus:border-green-500 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-0 bg-white transition-colors font-medium text-gray-700">
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-green-700 uppercase tracking-wide flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              Turno horario
+            </label>
+            <select id="hora"
+              class="border-2 border-gray-200 hover:border-green-300 focus:border-green-500 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-0 bg-white transition-colors font-medium text-gray-700 min-w-[168px]">
+            </select>
+          </div>
+
+          <div class="flex flex-col gap-1.5 flex-1 min-w-[160px]">
+            <label class="text-xs font-bold text-green-700 uppercase tracking-wide flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+              DNI del visitante
+            </label>
+            <input id="dni" type="text" placeholder="Ej: 12345678"
+              class="border-2 border-gray-200 hover:border-green-300 focus:border-green-500 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-0 transition-colors placeholder-gray-400 font-medium"
+              onkeydown="if(event.key==='Enter')reservar()">
+          </div>
+
+          <button onclick="reservar()"
+            class="self-end bg-gradient-to-r from-green-700 to-emerald-600 hover:from-green-800 hover:to-emerald-700 text-white font-bold px-7 py-2.5 rounded-xl text-sm shadow-md shadow-green-200 hover:shadow-lg transition-all flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Reservar
+          </button>
+
+        </div>
+
+        <!-- Mensaje feedback — mismo id, solo cambian las clases inline del JS (verde/rojo ya estaban) -->
+        <div id="msgOp" class="hidden mt-4 text-sm font-medium rounded-xl px-4 py-3"></div>
+
+        <!-- Panel ocupación del turno -->
+        <div id="slotInfo" class="hidden mt-4 bg-green-50 border border-green-200 rounded-xl p-4">
+          <p class="text-xs font-bold text-green-700 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            Capacidad del turno seleccionado
+          </p>
+          <div id="slotBarra"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Lista reservas del día -->
+    <div id="listaDia" class="space-y-2"></div>
+
+  </div>
+
+  <!-- ─────────────── MONITOR ─────────────── -->
+  <div id="monitor" class="hidden fade">
+    <div class="max-w-md mx-auto space-y-5">
+
+      <!-- Encabezado -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center shadow-sm shadow-amber-200">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-lg font-extrabold text-green-900">Control de Acceso</h2>
+          <p class="text-green-600 text-xs font-medium">Verifica si el visitante tiene reserva</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-md shadow-green-100 border border-green-100 overflow-hidden">
+        <div class="h-1 bg-gradient-to-r from-amber-400 via-yellow-400 to-lime-400"></div>
+        <div class="p-6">
+          <label class="text-xs font-bold text-green-700 uppercase tracking-wide block mb-2">DNI del visitante</label>
+          <div class="flex gap-2">
+            <div class="relative flex-1">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>
+              </svg>
+              <input id="dniCheck" type="text" placeholder="Ingresa el DNI"
+                class="w-full pl-9 pr-3 py-2.5 border-2 border-gray-200 hover:border-amber-300 focus:border-amber-400 rounded-xl text-sm focus:outline-none transition-colors placeholder-gray-400 font-medium"
+                onkeydown="if(event.key==='Enter')verificar()">
+            </div>
+            <button onclick="verificar()"
+              class="bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-sm shadow-amber-100 transition-all">
+              Verificar
+            </button>
+          </div>
+          <div id="resultado" class="mt-4"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─────────────── ADMIN ─────────────── -->
+  <div id="admin" class="hidden fade space-y-5">
+
+    <!-- Encabezado -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center shadow-sm shadow-purple-200">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-lg font-extrabold text-green-900">Panel Administrador</h2>
+          <p class="text-green-600 text-xs font-medium" id="adminSubtitulo">Monitoreo en tiempo real de todas las reservas</p>
+        </div>
+      </div>
+      <!-- Botón volver a vista general -->
+      <button id="btnVerTodo" onclick="iniciarAdmin()" class="hidden text-xs bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        Ver todo
+      </button>
+    </div>
+
+    <!-- Stats globales — siempre visibles -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="bg-gradient-to-br from-green-700 to-emerald-600 text-white rounded-2xl px-4 py-4 shadow-sm shadow-green-200">
+        <p class="text-green-200 text-xs font-semibold uppercase tracking-wide">Total global</p>
+        <p id="statGlobal" class="text-3xl font-extrabold leading-none mt-1">0</p>
+        <p class="text-green-300 text-xs mt-1">reservas en sistema</p>
+      </div>
+      <div class="bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl px-4 py-4 shadow-sm shadow-blue-200">
+        <p class="text-blue-200 text-xs font-semibold uppercase tracking-wide">Hoy</p>
+        <p id="statHoy" class="text-3xl font-extrabold leading-none mt-1">0</p>
+        <p class="text-blue-300 text-xs mt-1">visitantes hoy</p>
+      </div>
+      <div class="bg-gradient-to-br from-amber-500 to-orange-400 text-white rounded-2xl px-4 py-4 shadow-sm shadow-amber-200">
+        <p class="text-amber-100 text-xs font-semibold uppercase tracking-wide">Completos</p>
+        <p id="statTotal" class="text-3xl font-extrabold leading-none mt-1">0</p>
+        <p class="text-amber-200 text-xs mt-1" id="statFechaLabel">en fecha filtrada</p>
+      </div>
+      <div class="bg-gradient-to-br from-sky-500 to-cyan-500 text-white rounded-2xl px-4 py-4 shadow-sm shadow-sky-200">
+        <p class="text-sky-100 text-xs font-semibold uppercase tracking-wide">Fechas activas</p>
+        <p id="statFechas" class="text-3xl font-extrabold leading-none mt-1">0</p>
+        <p class="text-sky-200 text-xs mt-1">con reservas</p>
+      </div>
+    </div>
+
+    <!-- Filtro opcional por fecha -->
+    <div class="bg-white rounded-2xl shadow-sm border border-green-100 overflow-hidden">
+      <div class="h-1 bg-gradient-to-r from-purple-500 via-violet-400 to-indigo-400"></div>
+      <div class="px-5 py-4 flex flex-wrap items-center gap-4">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
+          <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Filtrar por fecha</label>
+        </div>
+        <input type="date" id="filtroFecha" onchange="verReservas()"
+          class="border-2 border-gray-200 hover:border-purple-300 focus:border-purple-500 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-0 bg-white transition-colors font-medium text-gray-700">
+        <!-- Stats del filtro (ocultos hasta usar filtro) -->
+        <div id="statsFiltroDia" class="hidden flex gap-3">
+          <span class="bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold px-3 py-1.5 rounded-lg">
+            <span id="statCompletos"></span> completos
+          </span>
+          <span class="bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-lg">
+            <span id="statLibres"></span> libres
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vista monitoring: todas las reservas agrupadas por fecha -->
+    <div id="adminMonitor" class="space-y-4"></div>
+
+    <!-- Placeholder si no hay ninguna reserva -->
+    <div id="adminPlaceholder" class="bg-white rounded-2xl border-2 border-dashed border-green-200 p-12 text-center">
+      <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
+        <svg class="w-7 h-7 text-green-300" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+      </div>
+      <p class="text-gray-400 font-medium text-sm">No hay reservas registradas todavía</p>
+      <p class="text-gray-300 text-xs mt-1">Las reservas aparecerán aquí automáticamente</p>
+    </div>
+
+    <!-- Lista filtrada por fecha (usada por verReservas()) -->
+    <div id="lista" class="space-y-2"></div>
+
+  </div>
+
+</main>
+
+<!-- Pie de página -->
+<footer class="mt-12 border-t border-green-100 bg-white/50 py-4">
+  <p class="text-center text-xs text-green-600/60 font-medium">
+    🌿 Parque Natural · Sistema de Reservas · Todos los derechos reservados
+  </p>
+</footer>
+
+<!-- ══════════════════════════════════════════════════
+     SCRIPT — SIN MODIFICACIONES
+══════════════════════════════════════════════════ -->
+<script>
+// ── Datos ────────────────────────────────────────────────
+const HORARIOS = [
+  "07:00 - 08:00","08:00 - 09:00","09:00 - 10:00",
+  "10:00 - 11:00","11:00 - 12:00","12:00 - 13:00",
+  "13:00 - 14:00","14:00 - 15:00","15:00 - 16:00"
+];
+const MAX = 4;
+const USUARIOS = [
+  { user:"admin",    pass:"123", tipo:"admin",    label:"Administrador" },
+  { user:"operario", pass:"123", tipo:"operario", label:"Operario"      },
+  { user:"monitor",  pass:"123", tipo:"monitor",  label:"Monitor"       }
+];
+
+let tipoActual = "";
+
+// poblar select de horarios
+const sel = document.getElementById("hora");
+HORARIOS.forEach(h => {
+  const op = document.createElement("option");
+  op.value = op.textContent = h;
+  sel.appendChild(op);
+});
+
+// ── localStorage ──────────────────────────────────────────
+const getR  = () => JSON.parse(localStorage.getItem("reservas")) || [];
+const saveR = d  => localStorage.setItem("reservas", JSON.stringify(d));
+
+// ── Login ─────────────────────────────────────────────────
+function setDemo(u, p) {
+  document.getElementById("user").value = u;
+  document.getElementById("pass").value = p;
+}
+
+function login() {
+  const u = document.getElementById("user").value.trim();
+  const p = document.getElementById("pass").value;
+  const found = USUARIOS.find(x => x.user === u && x.pass === p);
+
+  if (!found) {
+    const e = document.getElementById("loginErr");
+    e.textContent = "Usuario o contraseña incorrectos";
+    e.classList.remove("hidden");
+    setTimeout(() => e.classList.add("hidden"), 3000);
+    return;
+  }
+
+  tipoActual = found.tipo;
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById(tipoActual).classList.remove("hidden");
+
+  const hu = document.getElementById("headerUser");
+  hu.classList.remove("hidden"); hu.classList.add("flex");
+  document.getElementById("headerLabel").textContent = `${found.label}: ${found.user}`;
+
+  if (tipoActual === "admin") iniciarAdmin();
+}
+
+function logout() { location.reload(); }
+
+// ── Operario ──────────────────────────────────────────────
+// actualizar info de slot cuando cambia fecha u hora
+document.getElementById("fecha").addEventListener("change", actualizarSlotInfo);
+document.getElementById("hora").addEventListener("change",  actualizarSlotInfo);
+
+function actualizarSlotInfo() {
+  const fecha = document.getElementById("fecha").value;
+  const hora  = document.getElementById("hora").value;
+  if (!fecha) return;
+
+  const reservas = getR();
+  const ocupados = reservas.filter(r => r.fecha === fecha && r.hora === hora).length;
+  const libres   = MAX - ocupados;
+  const pct      = Math.round((ocupados / MAX) * 100);
+  const color    = ocupados >= MAX ? "bg-red-500" : ocupados > 0 ? "bg-amber-400" : "bg-emerald-500";
+
+  const iconos = Array.from({length: MAX}, (_, i) => {
+    const lleno = i < ocupados;
+    return `<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg ${lleno ? 'bg-gray-300 text-gray-500' : 'bg-blue-100 text-blue-500'}">
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/></svg>
+    </span>`;
+  }).join("");
+
+  document.getElementById("slotBarra").innerHTML = `
+    <div class="flex items-center gap-3 mb-2">
+      <div class="flex-1 bg-gray-200 rounded-full h-2">
+        <div class="${color} h-2 rounded-full transition-all" style="width:${pct}%"></div>
+      </div>
+      <span class="text-sm font-bold text-gray-700 whitespace-nowrap">${ocupados}/${MAX} ocupados</span>
+    </div>
+    <div class="flex gap-1.5">${iconos}</div>
+    ${ocupados >= MAX ? '<p class="text-red-500 text-xs font-semibold mt-2">Este horario está completo</p>' : `<p class="text-emerald-600 text-xs font-semibold mt-2">${libres} lugar${libres !== 1 ? 'es' : ''} disponible${libres !== 1 ? 's' : ''}</p>`}
+  `;
+  document.getElementById("slotInfo").classList.remove("hidden");
+
+  // lista de reservas del día
+  mostrarListaDia(fecha);
+}
+
+function mostrarListaDia(fecha) {
+  const reservas = getR().filter(r => r.fecha === fecha);
+  const cont = document.getElementById("listaDia");
+  if (reservas.length === 0) { cont.innerHTML = ""; return; }
+
+  let html = `<div class="bg-white rounded-2xl shadow-md p-5">
+    <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Reservas registradas — ${formatFecha(fecha)}</p>
+    <div class="space-y-1">`;
+
+  HORARIOS.forEach(h => {
+    const grupo = reservas.filter(r => r.hora === h);
+    if (!grupo.length) return;
+    html += `<div class="flex items-start gap-3 py-2 border-b border-gray-50 last:border-0">
+      <span class="text-xs font-bold text-gray-500 w-28 shrink-0 pt-0.5">${h}</span>
+      <div class="flex flex-wrap gap-1.5">${grupo.map(r =>
+        `<span class="bg-gray-100 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-lg">DNI ${r.dni}</span>`
+      ).join("")}</div>
+    </div>`;
+  });
+
+  html += `</div></div>`;
+  cont.innerHTML = html;
+}
+
+function reservar() {
+  const fecha = document.getElementById("fecha").value;
+  const hora  = document.getElementById("hora").value;
+  const dni   = document.getElementById("dni").value.trim();
+  const msg   = document.getElementById("msgOp");
+
+  if (!fecha) { mostrarMsg(msg, "Selecciona una fecha", "error"); return; }
+  if (!dni)   { mostrarMsg(msg, "Ingresa el DNI del turista", "error"); return; }
+
+  const reservas = getR();
+  const ocupados = reservas.filter(r => r.fecha === fecha && r.hora === hora).length;
+
+  if (ocupados >= MAX) {
+    mostrarMsg(msg, `El horario ${hora} ya está completo (${MAX}/${MAX})`, "error"); return;
+  }
+
+  const dup = reservas.find(r => r.dni === dni && r.fecha === fecha && r.hora === hora);
+  if (dup) { mostrarMsg(msg, "Este DNI ya tiene reserva en ese horario", "error"); return; }
+
+  reservas.push({ operario: tipoActual, fecha, hora, dni });
+  saveR(reservas);
+
+  document.getElementById("dni").value = "";
+  mostrarMsg(msg, `✓ Reserva exitosa — DNI ${dni}  |  ${formatFecha(fecha)}  ${hora}`, "ok");
+  actualizarSlotInfo();
+}
+
+function mostrarMsg(el, texto, tipo) {
+  el.textContent = texto;
+  el.className = `mt-4 text-sm font-medium rounded-lg px-4 py-3 ${
+    tipo === "ok"
+      ? "bg-green-50 border border-green-200 text-green-700"
+      : "bg-red-50 border border-red-200 text-red-600"
+  }`;
+  el.classList.remove("hidden");
+  if (tipo === "error") setTimeout(() => el.classList.add("hidden"), 3500);
+}
+
+function formatFecha(str) {
+  if (!str) return "";
+  const [y, m, d] = str.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+// ── Monitor ───────────────────────────────────────────────
+function verificar() {
+  const dni = document.getElementById("dniCheck").value.trim();
+  const res = document.getElementById("resultado");
+  if (!dni) { res.innerHTML = ""; return; }
+
+  const encontrado = getR().find(r => r.dni === dni);
+
+  if (encontrado) {
+    res.innerHTML = `
+      <div class="bg-green-50 border border-green-200 rounded-xl p-4 fade">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <p class="font-bold text-green-700">Acceso Permitido</p>
+            <p class="text-xs text-green-600">DNI ${dni} tiene reserva confirmada</p>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <div class="flex-1 bg-white border border-green-200 rounded-lg px-3 py-2">
+            <p class="text-xs text-gray-400 font-semibold">Fecha</p>
+            <p class="text-sm font-bold text-gray-800">${formatFecha(encontrado.fecha)}</p>
+          </div>
+          <div class="flex-1 bg-white border border-green-200 rounded-lg px-3 py-2">
+            <p class="text-xs text-gray-400 font-semibold">Horario</p>
+            <p class="text-sm font-bold text-gray-800">${encontrado.hora}</p>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    res.innerHTML = `
+      <div class="bg-red-50 border border-red-200 rounded-xl p-4 fade">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <p class="font-bold text-red-600">Acceso Denegado</p>
+            <p class="text-xs text-red-500">DNI ${dni} no tiene reserva registrada</p>
+          </div>
+        </div>
+      </div>`;
+  }
+}
+
+// ── Admin ─────────────────────────────────────────────────
+const DIAS_NOMBRE = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+const MESES_NOMBRE = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+
+function iniciarAdmin() {
+  // limpiar filtro y lista filtrada
+  document.getElementById("filtroFecha").value = "";
+  document.getElementById("lista").innerHTML = "";
+  document.getElementById("statsFiltroDia").classList.add("hidden");
+  document.getElementById("btnVerTodo").classList.add("hidden");
+  document.getElementById("adminSubtitulo").textContent = "Monitoreo en tiempo real de todas las reservas";
+
+  mostrarTodasReservas();
+}
+
+function mostrarTodasReservas() {
+  const reservas = getR();
+  const hoyStr   = new Date().toISOString().split("T")[0];
+  const monitor  = document.getElementById("adminMonitor");
+  const ph       = document.getElementById("adminPlaceholder");
+
+  // stats globales
+  const fechasUnicas = [...new Set(reservas.map(r => r.fecha))];
+  document.getElementById("statGlobal").textContent  = reservas.length;
+  document.getElementById("statHoy").textContent     = reservas.filter(r => r.fecha === hoyStr).length;
+  document.getElementById("statFechas").textContent  = fechasUnicas.length;
+  // statTotal aquí muestra turnos completos en todo el sistema
+  const turnosCompletos = HORARIOS.reduce((acc, h) =>
+    acc + fechasUnicas.filter(f => reservas.filter(r => r.fecha === f && r.hora === h).length >= MAX).length, 0);
+  document.getElementById("statTotal").textContent = turnosCompletos;
+
+  if (reservas.length === 0) {
+    monitor.innerHTML = "";
+    ph.classList.remove("hidden");
+    return;
+  }
+  ph.classList.add("hidden");
+
+  // ordenar fechas: hoy primero, luego próximas, luego pasadas
+  const pasadas   = fechasUnicas.filter(f => f <  hoyStr).sort((a,b) => b.localeCompare(a));
+  const hoy       = fechasUnicas.filter(f => f === hoyStr);
+  const proximas  = fechasUnicas.filter(f => f >  hoyStr).sort((a,b) => a.localeCompare(b));
+  const ordenadas = [...hoy, ...proximas, ...pasadas];
+
+  monitor.innerHTML = ordenadas.map(fecha => buildFechaCard(fecha, reservas, hoyStr)).join("");
+}
+
+function buildFechaCard(fecha, reservas, hoyStr) {
+  const rDia     = reservas.filter(r => r.fecha === fecha);
+  const [y,m,d]  = fecha.split("-");
+  const fechaObj = new Date(+y, +m - 1, +d);
+  const diaNom   = DIAS_NOMBRE[fechaObj.getDay()];
+  const label    = `${diaNom}, ${+d} de ${MESES_NOMBRE[+m - 1]} ${y}`;
+
+  const esHoy    = fecha === hoyStr;
+  const esPasado = fecha < hoyStr;
+
+  const badgeHoy    = esHoy    ? `<span class="bg-blue-500 text-white text-xs font-bold px-2 py-0.5 rounded-full ml-2">HOY</span>` : "";
+  const badgePasado = esPasado ? `<span class="bg-gray-300 text-gray-600 text-xs font-semibold px-2 py-0.5 rounded-full ml-2">Pasado</span>` : "";
+
+  const headerBg = esHoy
+    ? "bg-blue-600"
+    : esPasado ? "bg-gray-400" : "bg-green-700";
+
+  const totalDia      = rDia.length;
+  const turnosFull    = HORARIOS.filter(h => rDia.filter(r => r.hora === h).length >= MAX).length;
+  const turnosConRes  = HORARIOS.filter(h => rDia.filter(r => r.hora === h).length > 0).length;
+
+  const slotRows = HORARIOS.map(h => {
+    const grupo    = rDia.filter(r => r.hora === h);
+    const ocupados = grupo.length;
+    if (ocupados === 0) return "";   // solo mostrar turnos con reservas
+
+    const pct      = Math.round((ocupados / MAX) * 100);
+    const barColor = ocupados >= MAX ? "bg-red-400" : "bg-amber-400";
+    const tag      = ocupados >= MAX
+      ? `<span class="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">Completo</span>`
+      : `<span class="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-0.5 rounded-full">${ocupados}/${MAX}</span>`;
+
+    const dnis = grupo.map(r =>
+      `<span class="bg-gray-100 text-gray-700 text-xs font-semibold px-2 py-1 rounded-lg">DNI ${r.dni}</span>`
+    ).join("");
+
+    return `
+      <div class="flex items-start gap-4 py-2.5 border-b border-gray-50 last:border-0">
+        <div class="w-28 shrink-0 flex items-center gap-1.5 pt-0.5">
+          <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span class="text-xs font-bold text-gray-600">${h}</span>
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1.5">
+            <div class="flex-1 bg-gray-100 rounded-full h-1.5">
+              <div class="${barColor} h-1.5 rounded-full" style="width:${pct}%"></div>
+            </div>
+            ${tag}
+          </div>
+          <div class="flex flex-wrap gap-1.5">${dnis}</div>
+        </div>
+      </div>`;
+  }).join("");
+
+  const sinReservasMsg = turnosConRes === 0
+    ? `<p class="text-xs text-gray-400 py-2">Sin reservas en ningún turno</p>`
+    : "";
+
+  return `
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden fade">
+      <!-- Header de la fecha -->
+      <div class="${headerBg} px-5 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-white/80" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <span class="text-white font-bold text-sm">${label}</span>
+          ${badgeHoy}${badgePasado}
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-white/80 text-xs font-semibold">${totalDia} visitante${totalDia !== 1 ? "s" : ""}</span>
+          <span class="text-white/80 text-xs">·</span>
+          <span class="text-white/80 text-xs font-semibold">${turnosFull}/${HORARIOS.length} turnos llenos</span>
+        </div>
+      </div>
+      <!-- Turnos con reservas -->
+      <div class="px-5 py-1">
+        ${slotRows || sinReservasMsg}
+      </div>
+    </div>`;
+}
+
+function verReservas() {
+  const fecha = document.getElementById("filtroFecha").value;
+  if (!fecha) { iniciarAdmin(); return; }
+
+  // Al filtrar: ocultar monitor global, mostrar lista filtrada
+  document.getElementById("adminMonitor").innerHTML = "";
+  document.getElementById("adminPlaceholder").classList.add("hidden");
+  document.getElementById("btnVerTodo").classList.remove("hidden");
+  document.getElementById("btnVerTodo").classList.add("flex");
+  document.getElementById("adminSubtitulo").textContent = `Reservas del ${formatFecha(fecha)}`;
+
+  const reservas = getR();
+  const rDia     = reservas.filter(r => r.fecha === fecha);
+  const completos = HORARIOS.filter(h => rDia.filter(r => r.hora === h).length >= MAX).length;
+  const libres    = (HORARIOS.length * MAX) - rDia.length;
+
+  // actualizar stats contextuales
+  const hoyStr = new Date().toISOString().split("T")[0];
+  document.getElementById("statGlobal").textContent = reservas.length;
+  document.getElementById("statHoy").textContent    = reservas.filter(r => r.fecha === hoyStr).length;
+  document.getElementById("statFechas").textContent = [...new Set(reservas.map(r => r.fecha))].length;
+  document.getElementById("statTotal").textContent  = rDia.length;
+  document.getElementById("statFechaLabel").textContent = "reservas ese día";
+
+  document.getElementById("statCompletos").textContent = completos;
+  document.getElementById("statLibres").textContent    = libres;
+  document.getElementById("statsFiltroDia").classList.remove("hidden");
+  document.getElementById("statsFiltroDia").classList.add("flex");
+
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
+
+  if (rDia.length === 0) {
+    lista.innerHTML = `
+      <div class="bg-white rounded-2xl border-2 border-dashed border-gray-200 p-8 text-center">
+        <p class="text-gray-400 font-medium text-sm">No hay reservas para el ${formatFecha(fecha)}</p>
+      </div>`;
+    return;
+  }
+
+  HORARIOS.forEach(h => {
+    const grupo    = rDia.filter(r => r.hora === h);
+    const ocupados = grupo.length;
+    const pct      = Math.round((ocupados / MAX) * 100);
+    const barColor = ocupados >= MAX ? "bg-red-400" : ocupados > 0 ? "bg-amber-400" : "bg-emerald-500";
+    const tagColor = ocupados >= MAX ? "bg-red-100 text-red-600"
+                   : ocupados > 0   ? "bg-amber-100 text-amber-700"
+                   : "bg-emerald-100 text-emerald-700";
+    const tagText  = ocupados >= MAX ? "Completo" : ocupados === 0 ? "Disponible" : `${ocupados}/${MAX}`;
+
+    lista.innerHTML += `
+      <div class="bg-white border border-gray-100 rounded-xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-semibold text-gray-800 text-sm">${h}</span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full ${tagColor}">${tagText}</span>
+            <span class="text-sm font-bold text-gray-500">${ocupados}/${MAX}</span>
+          </div>
+        </div>
+        <div class="w-full bg-gray-100 rounded-full h-1.5 mb-2">
+          <div class="${barColor} h-1.5 rounded-full" style="width:${pct}%"></div>
+        </div>
+        ${grupo.length
+          ? `<div class="flex flex-wrap gap-1.5">${grupo.map(r =>
+              `<span class="bg-gray-100 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-lg">DNI ${r.dni}</span>`
+            ).join("")}</div>`
+          : `<p class="text-xs text-gray-400">Sin reservas</p>`
+        }
+      </div>`;
+  });
+}
+</script>
+</body>
+</html>
